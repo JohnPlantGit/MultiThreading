@@ -4,18 +4,17 @@
 #include <mutex>
 #include "Logger.h"
 #include <string>
+#include "ThreadPool.h"
 
-void Print(int index)
+void Print()
 {
-	static std::mutex printMutex;
+	printf("Hello thread %i\n", std::this_thread::get_id());
+}
 
-	printMutex.lock();
-
-	std::cout << "Hello Thread\n";
-	std::cout << "a..." << index << "\n";
-	std::cout << "b...\n";
-
-	printMutex.unlock();
+void Sleep(int seconds)
+{
+	printf("Thread %i is sleeping for %i seconds\n", std::this_thread::get_id(), seconds);
+	std::this_thread::sleep_for(std::chrono::seconds(seconds));
 }
 
 int main()
@@ -33,7 +32,7 @@ int main()
 		thread.join();
 	}*/
 
-	Logger logger;
+	/*Logger logger;
 	for (int i = 0; i < threadCount; i++)
 	{
 		std::string output = "Test ";
@@ -41,11 +40,18 @@ int main()
 		output += "\n";
 		
 		logger.WriteToLog(output);
-	}
-	//logger.WriteToLog("Test3");
-	//logger.WriteToLog("Test4");
-	//logger.WriteToLog("Test5");
-	//logger.WriteToLog("Test2");
+	}*/
 
+
+
+	ThreadPool pool(2);
+	pool.AddTask(Print);
+	pool.AddTask(Print);
+	pool.AddTask(std::bind(Sleep, 1));
+	pool.AddTask(Print);
+	pool.AddTask(std::bind(Sleep, 3));
+
+	std::this_thread::sleep_for(std::chrono::seconds(2));	
+	//logger.WriteToLog("Finished Sleep\n");
 	return 0;
 }

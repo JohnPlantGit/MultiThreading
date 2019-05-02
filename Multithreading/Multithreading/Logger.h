@@ -19,6 +19,7 @@ public:
 private:
 	std::thread m_thread;
 	std::mutex m_mutex;
+	std::condition_variable cv;
 	bool m_hasData;
 	bool m_shouldClose;
 	std::list<std::string> m_data;
